@@ -1,0 +1,7 @@
+[project]
+name = "mount-linker"
+version = "0.1.0"
+description = "Automatically link devices on mount to a more convenient location."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
