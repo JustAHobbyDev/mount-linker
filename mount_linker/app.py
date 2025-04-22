@@ -1,12 +1,9 @@
-from operator import le
 import os
-import sys
 import time
 import logging
 from watchdog.observers import Observer
 from watchdog.events import (
     FileSystemEventHandler,
-    FileSystemEvent,
     DirCreatedEvent,
     FileCreatedEvent,
     DirDeletedEvent,
@@ -27,7 +24,7 @@ class WatchForDevices(FileSystemEventHandler):
             try:
                 os.symlink(event.src_path, link_path)
             except OSError as e:
-                print(f"mount-linker: Failed to create link {link_path}. {e.strerror}")
+                logging.error(f"mount-linker: Failed to create link {link_path}. {e.strerror}")
 
     def on_deleted(self, event: DirDeletedEvent | FileDeletedEvent) -> None:
         _, name = os.path.split(event.src_path)
@@ -37,21 +34,22 @@ class WatchForDevices(FileSystemEventHandler):
             try:
                 os.unlink(link_path)
             except OSError as e:
-                print(f"mount-linker: Failed to unlink {link_path}. {e.strerror}")
+                logging.error(f"mount-linker: Failed to unlink {link_path}. {e.strerror}")
 
-def run():
-    event_handler = WatchForDevices()
-    observer = Observer()
-    observer.schedule(event_handler, MOUNT_POINT)
-    observer.start()
+class MountLinker():
+    def run(self):
+        event_handler = WatchForDevices()
+        observer = Observer()
+        observer.schedule(event_handler, MOUNT_POINT)
+        observer.start()
 
-    print(f"mount-linker started: watching {MOUNT_POINT}")
+        logging.info(f"mount-linker started: watching {MOUNT_POINT}")
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("\nmount-linker: Exiting...")
-    finally:
-        observer.stop()
-        observer.join()
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("\nmount-linker: Exiting...")
+        finally:
+            observer.stop()
+            observer.join()

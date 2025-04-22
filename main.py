@@ -1,13 +1,15 @@
 import os
-from mount_linker.app import run
+import logging
+from mount_linker.app import MountLinker
 
 
 def main():
+    ml = MountLinker()
     try:
-        run()
+        ml.run()
     except Exception as e:
-        print(f"Error: {e.with_traceback}")
-        os._exit(0)
+        logging.critical(f"Error: {e.with_traceback}")
+        os._exit(1)
 
 
 if __name__ == "__main__":
