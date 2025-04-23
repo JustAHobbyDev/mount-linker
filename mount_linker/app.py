@@ -1,6 +1,7 @@
 import os
 import time
 import logging
+from journal_logger import get_logger
 from watchdog.observers import Observer
 from watchdog.events import (
     FileSystemEventHandler,
@@ -9,32 +10,44 @@ from watchdog.events import (
     DirDeletedEvent,
     FileDeletedEvent,
 )
+from config import load_config
 
-HOME = os.path.expanduser("~")
-_, USER = os.path.split(HOME)
-MOUNT_POINT = f"/run/media/{USER}"
-LINK_PREFIX = "_"
+logger = get_logger(__name__)
+config = load_config()
 
 class WatchForDevices(FileSystemEventHandler):
+    def __init__(self, config):
+        self.target_dir = config.get('TARGET_DIR')
+        self.prefix = config.get('PREFIX')
+        super().__init__()
+
     def on_created(self, event: DirCreatedEvent | FileCreatedEvent) -> None:
         _, name = os.path.split(event.src_path)
-        link_name = f"{LINK_PREFIX}{name}"
-        link_path = f"{HOME}/{link_name}"
+        link_path = self.target_dir / name
+
         if not os.path.exists(link_path):
             try:
                 os.symlink(event.src_path, link_path)
             except OSError as e:
-                logging.error(f"mount-linker: Failed to create link {link_path}. {e.strerror}")
+                logging.error(f"Failed to create link: {e.strerror}", extra={
+                    'SYSLOG_INDENTIFIER': 'mount_linker',
+                    'PRIORITY': 3, # err
+                    'CUSTOM_FIELD': 'error'
+                })
 
     def on_deleted(self, event: DirDeletedEvent | FileDeletedEvent) -> None:
         _, name = os.path.split(event.src_path)
-        link_name = f"{LINK_PREFIX}{name}"
-        link_path = f"{HOME}/{link_name}"
+        link_path = self.target_dir / name
+
         if os.path.lexists(link_path) and not os.path.exists(link_path):
             try:
                 os.unlink(link_path)
             except OSError as e:
-                logging.error(f"mount-linker: Failed to unlink {link_path}. {e.strerror}")
+                logging.error(f"Failed to remove link: {e.strerror}", extra={
+                    'SYSLOG_INDENTIFIER': 'mount_linker',
+                    'PRIORITY': 3, # err
+                    'CUSTOM_FIELD': 'error'
+                })
 
 class MountLinker():
     def run(self):
@@ -43,7 +56,11 @@ class MountLinker():
         observer.schedule(event_handler, MOUNT_POINT)
         observer.start()
 
-        logging.info(f"mount-linker started: watching {MOUNT_POINT}")
+        logging.info("Watching mount points...", extra={
+            'SYSLOG_INDENTIFIER': 'mount_linker',
+            'PRIORITY': 6,
+            'CUSTOM_FIELD': 'startup'
+        })
 
         try:
             while True:
