@@ -6,10 +6,10 @@ A Linux utility that automatically creates convenient symlinks in your home dire
 
 ## Features
 
-- 🔍 Monitors `/media` (or custom directory) for new mount events
-- 🔗 Creates symbolic links in your home directory (e.g., `~/mnt-usbdrive`)
+- 🔍 Monitors `/run/media/$USER` (or custom directory) for new mount events
+- 🔗 Creates symbolic links in your home directory (e.g., `~/_usbdrive`)
 - 🧹 Automatically removes links when devices are unmounted
-- 🐧 Lightweight Python implementation using `inotify`
+- 🐧 Python implementation using `inotify`
 - ⚙️ Configurable mount point and link naming
 
 ## Installation
@@ -54,7 +54,8 @@ systemctl --user enable --now mount-linker.service
 
 Configure through `~/.config/mount-linker/config.yml`:
 
-```yaml:~/.config/mount-linker/config.yml
+```yaml:
+# ~/.config/mount-linker/config.yml
 # IMPORTANT: Environment variables are used to demonstrate the default values!
 # Use absolute links when specifying directories to watch.
 
