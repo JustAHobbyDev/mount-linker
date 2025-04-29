@@ -1,8 +1,11 @@
 # Mount Linker
 
-[![License: Apache v2](https://img.shields.io/badge/License-APACHEv2-D32228.svg)](https://opensource.org/license/apache-2-0)
+[![License: Apache v2](https://img.shields.io/badge/License-APACHEv2-D32228.svg)](https://opensource.org/license/apache-2-0) ![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)
 
 A Linux utility that automatically creates convenient symlinks in your home directory for newly mounted block devices.
+
+This app is driven primarily by the [Watchdog](https://github.com/gorakhargosh/watchdog?tab=readme-ov-file) package.
+If you have need for utilizing the inotify system in Linux, I could not recommend it more highly.
 
 ## Features
 
@@ -37,27 +40,15 @@ pip install .
 mount-linker
 ```
 
-### Configuration
-
-# Run in foreground
-```bash
-mount-linker
-```
-
-### Systemd Service (Autostart)
-```bash
-cp systemd/mount-linker.service ~/.config/systemd/user/
-systemctl --user enable --now mount-linker.service
-```
-
 ## Configuration
 
-Configure through `~/.config/mount-linker/config.yml`:
+- `mount-linker` will first check `~/.config/mount-linker/config.yml` for configurations settings.
+- If it does not find it or the specified directories are not found, it falls back to the default settings.
 
 ```yaml
 # ~/.config/mount-linker/config.yml
 # IMPORTANT: Environment variables are used to demonstrate the default values!
-# Use absolute links when specifying directories to watch.
+# Use absolute links when setting directories.
 
 mount_point: /run/media/$USER # Directory to monitor for mounts
 prefix: mnt_                  # Prefix for created symlinks
@@ -78,8 +69,3 @@ Pull requests are welcome! For major changes, please open an issue first.
 ## License
 
 [Apache 2.0](https://choosealicense.com/licenses/apache-2.0/)
-
-## Recommended GitHub Enhancements
-
-1. **Add these badges** (create a new release first):
-![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)
