@@ -54,14 +54,14 @@ systemctl --user enable --now mount-linker.service
 
 Configure through `~/.config/mount-linker/config.yml`:
 
-```yaml:
+```yaml
 # ~/.config/mount-linker/config.yml
 # IMPORTANT: Environment variables are used to demonstrate the default values!
 # Use absolute links when specifying directories to watch.
 
 mount_point: /run/media/$USER # Directory to monitor for mounts
-prefix: mnt_ # Prefix for created symlinks
-target_dir: $HOME # Where to create symlinks
+prefix: mnt_                  # Prefix for created symlinks
+target_dir: $HOME             # Where to create symlinks
 ```
 
 ## Example
