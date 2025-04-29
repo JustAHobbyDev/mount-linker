@@ -9,3 +9,6 @@ dependencies = [
     "systemd-python>=235",
     "watchdog>=6.0.0",
 ]
+
+[project.scripts]
+mount-linker = "mount_linker.cli:main"

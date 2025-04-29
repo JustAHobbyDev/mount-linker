@@ -1,6 +1,6 @@
 # Mount Linker
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: Apache v2](https://img.shields.io/badge/License-APACHEv2-D32228.svg)](https://opensource.org/license/apache-2-0)
 
 A Linux utility that automatically creates convenient symlinks in your home directory for newly mounted block devices.
 
@@ -15,7 +15,7 @@ A Linux utility that automatically creates convenient symlinks in your home dire
 ## Installation
 
 ### Prerequisites
-- Python 3.7+
+- Python 3.11+
 - Linux with inotify support
 
 ### Method 1: PIP Install
@@ -37,15 +37,10 @@ pip install .
 mount-linker
 ```
 
-### Options (via environment variables)
-```bash
-# Change monitored directory (default: /media)
-export MOUNT_LINKER_MOUNT_POINT="/mnt"
-
-# Change link prefix (default: "mnt-")
-export MOUNT_LINKER_PREFIX="drive-"
+### Configuration
 
 # Run in foreground
+```bash
 mount-linker
 ```
 
@@ -57,19 +52,22 @@ systemctl --user enable --now mount-linker.service
 
 ## Configuration
 
-Configure through environment variables:
+Configure through `~/.config/mount-linker/config.yml`:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `MOUNT_LINKER_MOUNT_POINT` | `/media` | Directory to monitor for mounts |
-| `MOUNT_LINKER_PREFIX` | `mnt-` | Prefix for created symlinks |
-| `MOUNT_LINKER_HOME_DIR` | `$HOME` | Where to create symlinks |
+```yaml:~/.config/mount-linker/config.yml
+# IMPORTANT: Environment variables are used to demonstrate the default values!
+# Use absolute links when specifying directories to watch.
+
+mount_point: /run/media/$USER # Directory to monitor for mounts
+prefix: mnt_ # Prefix for created symlinks
+target_dir: $HOME # Where to create symlinks
+```
 
 ## Example
 
-When you insert a USB drive that mounts to `/media/user/MY_USB`, the tool will:
+When you insert a USB drive that mounts to `/run/media/$USER/MY_USB`, the tool will:
 1. Detect the new mount
-2. Create a symlink at `~/mnt-MY_USB`
+2. Create a symlink at `~/_MY_USB`
 3. Remove the link when unmounted
 
 ## Contributing
@@ -78,19 +76,9 @@ Pull requests are welcome! For major changes, please open an issue first.
 
 ## License
 
-[GNU GPLv3](https://choosealicense.com/licenses/gpl-3.0/)
+[Apache 2.0](https://choosealicense.com/licenses/apache-2.0/)
 
 ## Recommended GitHub Enhancements
 
 1. **Add these badges** (create a new release first):
 ![Python Version](https://img.shields.io/badge/python-3.11%2B-blue)
-![Tests](https://github.com/JustAHobbyDev/mount-linker/actions/workflows/tests.yml/badge.svg)
-
-2. **Add a screenshot** (create an `assets/` folder):
-## Demo
-![Demo GIF](assets/demo.gif)
-
-### Debug Mode
-```bash
-MOUNT_LINKER_DEBUG=1 mount-linker
-```
